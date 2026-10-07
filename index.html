@@ -2,13 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+
+  <!-- PWA Core -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+
+  <!-- SEO & Description -->
+  <title>EduTrack • Student Management App</title>
+  <meta name="description" content="Mobile-first student portal for tracking courses, grades, results and academic performance.">
+  <meta name="keywords" content="student management, education, portal, GPA, courses, results, mobile">
+  <meta name="author" content="EduTrack">
+
+  <!-- iOS / Safari PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#4f46e5">
-  <title>EduTrack • Student Management App</title>
+  <meta name="apple-mobile-web-app-title" content="EduTrack">
+  <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png">
+
+  <!-- Windows / Microsoft Tiles -->
+  <meta name="msapplication-TileColor" content="#4f46e5">
+  <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+  <meta name="msapplication-config" content="none">
+
+  <!-- Open Graph (Social Sharing) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EduTrack • Student Management App">
+  <meta property="og:description" content="Mobile-first student portal for courses, grades, results and academic tracking.">
+  <meta property="og:image" content="/icons/icon-512x512.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="EduTrack • Student Management App">
+  <meta name="twitter:description" content="Mobile-first student portal for courses, grades, results and academic tracking.">
+  <meta name="twitter:image" content="/icons/icon-192x192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96x96.png">
+  <link rel="shortcut icon" href="/icons/icon-96x96.png">
+
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+  <link rel="preload" href="app.js" as="script">
 </head>
 <body>
 
@@ -516,5 +558,101 @@
   </div>
 
   <script src="app.js"></script>
+
+  <!-- PWA: Service Worker Registration & Install Prompt -->
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+          console.log('[PWA] Service Worker registered:', reg.scope);
+
+          // Listen for updates
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New version available — show toast
+                if (window.StudentApp) {
+                  // Use app's toast if available
+                  setTimeout(() => {
+                    const container = document.getElementById('toast-container');
+                    if (container) {
+                      const t = document.createElement('div');
+                      t.className = 'toast toast-info';
+                      t.innerHTML = '🔄 New version available — <strong style="cursor:pointer;margin-left:4px;" onclick="location.reload()">Refresh to update</strong>';
+                      container.appendChild(t);
+                      setTimeout(() => t.remove(), 6000);
+                    }
+                  }, 1000);
+                }
+              }
+            });
+          });
+        } catch (err) {
+          console.error('[PWA] Service Worker registration failed:', err);
+        }
+      });
+    }
+
+    // PWA Install Prompt (Add to Home Screen)
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Show install button after login (when app shell is visible)
+      setTimeout(() => {
+        const container = document.getElementById('toast-container');
+        const appShell = document.getElementById('main-app-shell');
+        if (!container || !deferredPrompt) return;
+        if (appShell && !appShell.classList.contains('hidden')) {
+          const t = document.createElement('div');
+          t.className = 'toast toast-info';
+          t.style.cursor = 'pointer';
+          t.innerHTML = '📲 Install <strong>EduTrack</strong> on your device for offline access!';
+          t.addEventListener('click', async () => {
+            t.remove();
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('[PWA] Install outcome:', outcome);
+            deferredPrompt = null;
+          });
+          container.appendChild(t);
+          setTimeout(() => { if (t.parentNode) t.remove(); }, 8000);
+        }
+      }, 3000);
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWA] App installed successfully!');
+      deferredPrompt = null;
+    });
+
+    // Online / Offline indicator
+    function updateOnlineStatus() {
+      const dot = document.querySelector('.online-dot');
+      if (!dot) return;
+      if (navigator.onLine) {
+        dot.style.background = 'var(--accent-success)';
+        dot.title = 'Online';
+      } else {
+        dot.style.background = 'var(--accent-danger)';
+        dot.title = 'Offline';
+        const container = document.getElementById('toast-container');
+        if (container) {
+          const t = document.createElement('div');
+          t.className = 'toast toast-error';
+          t.innerHTML = '⚠️ You are offline. Changes will sync when reconnected.';
+          container.appendChild(t);
+          setTimeout(() => t.remove(), 4000);
+        }
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+  </script>
 </body>
 </html>
+
