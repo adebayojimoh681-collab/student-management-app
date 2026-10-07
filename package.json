@@ -1,14 +1,24 @@
 {
   "name": "student-management-app",
   "version": "1.0.0",
-  "description": "Mobile-Friendly Student Management Web App",
+  "description": "Mobile-Friendly Student Management Web App - EduTrack Portal",
   "main": "index.html",
   "scripts": {
     "start": "cmd /c start index.html",
-    "build": "echo Ready for production! No build step required - static HTML/CSS/JS is ready to deploy.",
-    "serve": "powershell -ExecutionPolicy Bypass -File ./server.ps1"
+    "build": "echo Static site - no build step required.",
+    "serve": "powershell -ExecutionPolicy Bypass -File ./server.ps1",
+    "deploy": "vercel --prod"
   },
-  "keywords": ["student-management", "mobile", "responsive", "education", "portal"],
-  "author": "",
+  "keywords": [
+    "student-management",
+    "mobile",
+    "responsive",
+    "education",
+    "portal",
+    "dashboard",
+    "gpa",
+    "courses"
+  ],
+  "author": "adebayojimoh681-collab",
   "license": "MIT"
 }
