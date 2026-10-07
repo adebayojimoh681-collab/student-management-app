@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4f46e5">
+  <title>EduTrack • Student Management App</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body>
+
+  <!-- App Wrapper Container -->
+  <div id="app">
+
+    <!-- ====================================================================
+         1. LOGIN VIEW
+         ==================================================================== -->
+    <div id="login-view" class="tab-view">
+      <div class="login-brand">
+        <div class="brand-icon-box">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">EduTrack Portal</h1>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Mobile Student Management System</p>
+      </div>
+
+      <div class="login-card">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Student Sign In</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-id">Student ID or Campus Email</label>
+            <input type="text" id="login-id" class="form-input" placeholder="e.g. STU-2024-8842 or alex@campus.edu" value="alex.johnson@campus.edu" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-pass">Password</label>
+            <input type="password" id="login-pass" class="form-input" placeholder="••••••••••••" value="student123" required>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.78rem;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-secondary);">
+              <input type="checkbox" checked style="accent-color: var(--accent-primary);"> Remember me
+            </label>
+            <a href="javascript:void(0)" onclick="alert('Demo reset instructions sent to student email!')" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn-full btn-primary">
+            Sign In to Portal →
+          </button>
+        </form>
+
+        <div class="quick-demo-accounts">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">Quick Demo 1-Click Access:</div>
+          <button type="button" class="demo-chip-btn" onclick="window.StudentApp.quickLogin('Alex Johnson', 'alex.johnson@campus.edu')">
+            👤 Alex Johnson (Junior • CS)
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px; font-size: 0.75rem; color: var(--text-muted);">
+        Campus Portal v2.4 • Secure SSL 256-bit Encryption
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         2. MAIN AUTHENTICATED APP SHELL
+         ==================================================================== -->
+    <div id="main-app-shell" class="hidden">
+
+      <!-- Top Sticky App Header -->
+      <header class="app-header">
+        <div class="header-user-info" onclick="window.StudentApp.navigateTo('profile')">
+          <div class="avatar-ring">
+            <img id="header-avatar" class="avatar-img" src="" alt="Student Profile">
+            <span class="online-dot"></span>
+          </div>
+          <div>
+            <div class="user-text-greeting">WELCOME BACK</div>
+            <div class="user-name-title" id="header-user-name">Student</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="icon-btn" title="Toggle Mobile / Wide View" onclick="window.StudentApp.toggleExpandView()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 3v18"/>
+            </svg>
+          </button>
+
+          <button class="icon-btn" title="Notifications" onclick="window.StudentApp.openNotifications()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span id="header-notif-badge" class="icon-badge"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Main Container -->
+      <main class="main-content">
+
+        <!-- ================================================================
+             TAB 1: DASHBOARD
+             ================================================================ -->
+        <section id="dashboard-view" class="tab-view">
+          
+          <!-- Hero Card -->
+          <div class="card hero-card">
+            <div class="hero-pill">
+              <span>★</span> Dean's Honors List
+            </div>
+            <h2 id="dash-welcome-name" style="font-size: 1.45rem; font-weight: 800; margin-bottom: 2px;">Alex Johnson</h2>
+            <div id="dash-major-text" style="font-size: 0.82rem; opacity: 0.9; margin-bottom: 14px;">3rd Year (Junior) • Computer Science</div>
+
+            <div style="background: rgba(0, 0, 0, 0.15); padding: 12px; border-radius: var(--radius-md); backdrop-filter: blur(4px);">
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; opacity: 0.95;">
+                <span>Degree Completion</span>
+                <span id="dash-credit-pct">76/120 Credits (63%)</span>
+              </div>
+              <div class="progress-bar-container" style="background: rgba(255, 255, 255, 0.2); height: 6px; margin-top: 6px;">
+                <div id="dash-credit-bar" class="progress-bar-fill" style="width: 63%; background: #ffffff;"></div>
+              </div>
+            </div>
+
+            <div class="hero-gpa-stat">
+              <div>
+                <div class="gpa-label">Cumulative GPA</div>
+                <div id="dash-cgpa-val" class="gpa-huge">3.84</div>
+              </div>
+              <button class="btn-pill" style="background: rgba(255, 255, 255, 0.25); color: #ffffff;" onclick="window.StudentApp.navigateTo('results')">
+                View Grades →
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Actions Grid -->
+          <div class="quick-actions-row">
+            <div class="quick-action-btn" onclick="window.StudentApp.navigateTo('courses')">
+              <div class="quick-action-icon" style="background: var(--accent-primary-light); color: var(--accent-primary);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+              </div>
+              <div class="quick-action-label">Courses</div>
+            </div>
+
+            <div class="quick-action-btn" onclick="window.StudentApp.navigateTo('results')">
+              <div class="quick-action-icon" style="background: var(--accent-success-light); color: var(--accent-success);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              </div>
+              <div class="quick-action-label">Results</div>
+            </div>
+
+            <div class="quick-action-btn" onclick="window.StudentApp.printTranscript()">
+              <div class="quick-action-icon" style="background: var(--accent-warning-light); color: var(--accent-warning);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+              </div>
+              <div class="quick-action-label">Print Report</div>
+            </div>
+
+            <div class="quick-action-btn" onclick="window.StudentApp.navigateTo('profile')">
+              <div class="quick-action-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+              </div>
+              <div class="quick-action-label">Profile</div>
+            </div>
+          </div>
+
+          <!-- Academic Metrics Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: var(--accent-primary-light); color: var(--accent-primary);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              </div>
+              <div>
+                <div id="stat-enrolled-count" class="stat-value">4</div>
+                <div class="stat-title">Active Courses</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: var(--accent-success-light); color: var(--accent-success);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div>
+                <div id="stat-attendance-val" class="stat-value">94%</div>
+                <div class="stat-title">Attendance Rate</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: var(--accent-warning-light); color: var(--accent-warning);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div>
+                <div id="stat-sgpa-val" class="stat-value">3.88</div>
+                <div class="stat-title">Current SGPA</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-secondary);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div>
+                <div class="stat-value" style="color: var(--accent-success); font-size: 1.1rem;">Paid</div>
+                <div class="stat-title">Fee Status</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's Schedule -->
+          <div class="section-header">
+            <span class="section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Enrolled Classes
+            </span>
+            <span class="section-link" onclick="window.StudentApp.navigateTo('courses')">View All</span>
+          </div>
+          <div id="dash-classes-preview" style="margin-bottom: 20px;"></div>
+
+          <!-- Upcoming Deadlines -->
+          <div class="section-header">
+            <span class="section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              Upcoming Exams & Tasks
+            </span>
+            <span class="badge badge-warning">4 PENDING</span>
+          </div>
+          <div class="card" id="dash-deadlines-container"></div>
+
+        </section>
+
+
+        <!-- ================================================================
+             TAB 2: COURSES
+             ================================================================ -->
+        <section id="courses-view" class="tab-view hidden">
+          
+          <div class="section-header">
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Course Management</h2>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="search-filter-bar">
+            <div class="search-input-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input type="text" class="search-input" placeholder="Search by name, code or professor..." oninput="window.StudentApp.searchCourses(this.value)">
+            </div>
+          </div>
+
+          <!-- Segmented Control Tabs -->
+          <div class="segmented-control">
+            <button class="segment-btn active" data-filter="enrolled" onclick="window.StudentApp.setCourseFilter('enrolled')">
+              My Enrolled Courses
+            </button>
+            <button class="segment-btn" data-filter="available" onclick="window.StudentApp.setCourseFilter('available')">
+              Course Catalog
+            </button>
+          </div>
+
+          <!-- Courses List Render Container -->
+          <div id="courses-list-container"></div>
+
+        </section>
+
+
+        <!-- ================================================================
+             TAB 3: RESULTS / GRADES
+             ================================================================ -->
+        <section id="results-view" class="tab-view hidden">
+          
+          <div class="section-header">
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Academic Results</h2>
+            <button class="btn-pill btn-secondary" onclick="window.StudentApp.printTranscript()">
+              🖨️ Print
+            </button>
+          </div>
+
+          <!-- Overall GPA Summary Hero -->
+          <div class="results-summary-card">
+            <div>
+              <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85;">Cumulative GPA</div>
+              <div style="font-size: 1.8rem; font-weight: 800;" id="results-cgpa-display">3.84</div>
+              <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 4px;">Status: <strong>First Class with Distinction</strong></div>
+            </div>
+            <div class="gpa-circle">
+              <div class="gpa-circle-val" id="results-sgpa-display">3.88</div>
+              <div class="gpa-circle-scale">SGPA</div>
+            </div>
+          </div>
+
+          <!-- Semester Selector -->
+          <div class="results-selector-wrap">
+            <label class="form-label">Select Academic Term</label>
+            <select id="results-semester-select" class="select-dropdown"></select>
+          </div>
+
+          <!-- Course Breakdown List -->
+          <div id="results-list-container"></div>
+
+          <!-- Interactive Target GPA Calculator -->
+          <div class="gpa-simulator-card">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="font-size: 1.2rem;">🎯</span>
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Target CGPA Simulator</h3>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">
+              Calculate the minimum SGPA required in your next semester (14 credits) to achieve your target graduation honors.
+            </p>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="number" id="target-gpa-input" class="form-input" style="padding: 8px 12px; width: 120px;" step="0.05" min="2.0" max="4.0" value="3.90">
+              <button class="btn-pill btn-primary" onclick="window.StudentApp.calculateTargetGPA()">
+                Calculate SGPA Needed
+              </button>
+            </div>
+            <div id="gpa-calc-result" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
+          </div>
+
+        </section>
+
+
+        <!-- ================================================================
+             TAB 4: PROFILE
+             ================================================================ -->
+        <section id="profile-view" class="tab-view hidden">
+          
+          <!-- Profile Hero -->
+          <div class="profile-hero">
+            <div class="profile-avatar-large">
+              <img id="profile-avatar-img" src="" alt="Student Profile Picture">
+            </div>
+            <div id="profile-full-name" class="profile-name">Student Name</div>
+            <div id="profile-student-id" class="profile-id">ID: STU-2024-8842</div>
+            <span id="profile-major-badge" class="badge badge-primary">Computer Science</span>
+
+            <div style="margin-top: 16px;">
+              <button class="btn-pill btn-secondary" onclick="window.StudentApp.openEditProfileModal()">
+                ✏️ Edit Personal Info
+              </button>
+            </div>
+          </div>
+
+          <!-- Personal Information Card -->
+          <div class="section-header">
+            <span class="section-title">Personal Details</span>
+          </div>
+          <div class="profile-details-list">
+            <div class="profile-detail-row">
+              <span class="profile-row-label">📧 Campus Email</span>
+              <span class="profile-row-val" id="prof-email-val"></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="profile-row-label">📱 Contact Phone</span>
+              <span class="profile-row-val" id="prof-phone-val"></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="profile-row-label">🎂 Date of Birth</span>
+              <span class="profile-row-val" id="prof-dob-val"></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="profile-row-label">🚨 Emergency Contact</span>
+              <span class="profile-row-val" id="prof-emergency-val"></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="profile-row-label">📍 Residence Address</span>
+              <span class="profile-row-val" id="prof-address-val"></span>
+            </div>
+          </div>
+
+          <!-- Academic Affiliation Card -->
+          <div class="section-header">
+            <span class="section-title">Academic Records</span>
+          </div>
+          <div class="profile-details-list">
+            <div class="profile-detail-row">
+              <span class="profile-row-label">🏛️ Faculty/Dept</span>
+              <span class="profile-row-val" id="prof-dept-val"></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="profile-row-label">🎓 Year & Standing</span>
+              <span class="profile-row-val" id="prof-year-val"></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="profile-row-label">👨‍🏫 Faculty Advisor</span>
+              <span class="profile-row-val" id="prof-advisor-val"></span>
+            </div>
+          </div>
+
+          <!-- App Settings & Actions -->
+          <div class="section-header">
+            <span class="section-title">Preferences & Security</span>
+          </div>
+          <div class="settings-group">
+            <div class="settings-item">
+              <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary);">🌙 Dark Theme Mode</span>
+              <label class="switch">
+                <input type="checkbox" id="theme-toggle-checkbox">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="settings-item" onclick="window.StudentApp.resetDemoData()">
+              <span style="font-weight: 600; font-size: 0.85rem; color: var(--accent-warning);">🔄 Reset to Default Demo Data</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Reset</span>
+            </div>
+            <div class="settings-item" onclick="window.StudentApp.handleLogout()">
+              <span style="font-weight: 600; font-size: 0.85rem; color: var(--accent-danger);">🚪 Sign Out of Portal</span>
+              <span style="font-size: 0.8rem; color: var(--accent-danger);">Log Out →</span>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- Bottom Mobile Navigation Bar -->
+      <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="dashboard" onclick="window.StudentApp.navigateTo('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </button>
+
+        <button class="nav-item" data-tab="courses" onclick="window.StudentApp.navigateTo('courses')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+          <span>Courses</span>
+        </button>
+
+        <button class="nav-item" data-tab="results" onclick="window.StudentApp.navigateTo('results')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <span>Results</span>
+        </button>
+
+        <button class="nav-item" data-tab="profile" onclick="window.StudentApp.navigateTo('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <span>Profile</span>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- ====================================================================
+         MODALS & OVERLAYS
+         ==================================================================== -->
+    
+    <!-- Course Details Modal -->
+    <div id="course-details-modal" class="modal-overlay" onclick="if(event.target === this) window.StudentApp.closeModal('course-details-modal')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <h3 id="modal-course-title" class="modal-title">Course Details</h3>
+          <button class="modal-close-btn" onclick="window.StudentApp.closeModal('course-details-modal')">✕</button>
+        </div>
+        <div id="modal-course-body"></div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal-overlay" onclick="if(event.target === this) window.StudentApp.closeModal('edit-profile-modal')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <h3 class="modal-title">Edit Profile Information</h3>
+          <button class="modal-close-btn" onclick="window.StudentApp.closeModal('edit-profile-modal')">✕</button>
+        </div>
+        <form id="edit-profile-form">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="edit-name-input" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Campus Email</label>
+            <input type="email" id="edit-email-input" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" id="edit-phone-input" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Emergency Contact Info</label>
+            <input type="text" id="edit-emergency-input" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Current Address</label>
+            <input type="text" id="edit-address-input" class="form-input" required>
+          </div>
+          <button type="submit" class="btn-full btn-primary" style="margin-top: 10px;">
+            Save & Update Profile
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notifications Drawer Modal -->
+    <div id="notifications-modal" class="modal-overlay" onclick="if(event.target === this) window.StudentApp.closeModal('notifications-modal')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <h3 class="modal-title">Campus Notifications</h3>
+          <button class="modal-close-btn" onclick="window.StudentApp.closeModal('notifications-modal')">✕</button>
+        </div>
+        <div id="notif-drawer-list"></div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
